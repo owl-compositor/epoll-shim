@@ -10,6 +10,8 @@
 #include <pthread.h>
 #include <time.h>
 
+#include "timespec_util.h"
+
 typedef enum {
 	TIMER_TYPE_UNSPECIFIED,
 	TIMER_TYPE_RELATIVE,

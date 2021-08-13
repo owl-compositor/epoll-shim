@@ -226,7 +226,7 @@ ATF_TC_BODY_FD_LEAKCHECK(signalfd__argument_checks, tcptr)
 	ATF_REQUIRE(close(sfd) == 0);
 
 	int fds[2];
-	ATF_REQUIRE(pipe2(fds, O_CLOEXEC) == 0);
+	ATF_REQUIRE(pipe(fds) == 0);
 
 	ATF_REQUIRE_ERRNO(EBADF, signalfd(invalid_fd, &mask, 0));
 	ATF_REQUIRE(signalfd(invalid_fd, NULL, 0));
@@ -350,7 +350,7 @@ ATF_TC_BODY_FD_LEAKCHECK(signalfd__sigwaitinfo, tcptr)
 	}
 
 	{
-#ifdef __OpenBSD__
+#if defined(__OpenBSD__) || defined(__APPLE__)
 		sigset_t mask2;
 		sigemptyset(&mask2);
 		sigaddset(&mask2, SIGINT);
@@ -377,7 +377,7 @@ ATF_TC_BODY_FD_LEAKCHECK(signalfd__sigwaitinfo, tcptr)
 	}
 
 	{
-#ifdef __OpenBSD__
+#if defined(__OpenBSD__) || defined(__APPLE__)
 		sigset_t mask2;
 		sigemptyset(&mask2);
 		sigaddset(&mask2, SIGUSR1);

@@ -206,12 +206,7 @@ signalfd_ctx_read_impl(SignalFDCtx *signalfd,
 	}
 #else
 	{
-		int s = sigtimedwait(&signalfd->sigs, &siginfo,
-		    &(struct timespec) { 0, 0 });
-		ec = s < 0 ? errno : 0;
-		if (ec == 0) {
-			assert(siginfo.si_signo == s);
-		}
+		ec = sigwait(&signalfd->sigs, &siginfo.si_signo);
 	}
 #endif
 	if (ec != 0) {

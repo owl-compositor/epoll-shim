@@ -210,7 +210,7 @@ epollfd_ctx_wait_or_block(FDContextMapNode *node, /**/
 		usleep(500000);
 #endif
 
-		int n = ppoll(pfds, nfds, timeout, sigs);
+		int n = ppoll_shim(pfds, nfds, timeout, sigs);
 		if (n < 0) {
 			ec = errno;
 		}

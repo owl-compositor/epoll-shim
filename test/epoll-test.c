@@ -36,7 +36,7 @@ static void
 fd_pipe(int fds[3])
 {
 	fds[2] = -1;
-	ATF_REQUIRE(pipe2(fds, O_CLOEXEC) == 0);
+	ATF_REQUIRE(pipe(fds) == 0);
 }
 
 static void
@@ -52,7 +52,7 @@ connector_client(void *arg)
 {
 	(void)arg;
 
-	int sock = socket(PF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);
+	int sock = socket(PF_INET, SOCK_STREAM, 0);
 	ATF_REQUIRE(sock >= 0);
 
 	if (connector_epfd >= 0) {
@@ -92,7 +92,7 @@ connector_client(void *arg)
 static int
 create_bound_socket()
 {
-	int sock = socket(PF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);
+	int sock = socket(PF_INET, SOCK_STREAM, 0);
 	ATF_REQUIRE(sock >= 0);
 
 	int enable = 1;
@@ -121,7 +121,7 @@ fd_tcp_socket(int fds[3])
 	ATF_REQUIRE(
 	    pthread_create(&client_thread, NULL, connector_client, NULL) == 0);
 
-	int conn = accept4(sock, NULL, NULL, SOCK_CLOEXEC);
+	int conn = accept(sock, NULL, NULL);
 	ATF_REQUIRE(conn >= 0);
 
 	void *client_socket = NULL;
@@ -1057,7 +1057,7 @@ ATF_TC_BODY_FD_LEAKCHECK(epoll__socket_shutdown, tcptr)
 ATF_TC_WITHOUT_HEAD(epoll__epollhup_on_fresh_socket);
 ATF_TC_BODY_FD_LEAKCHECK(epoll__epollhup_on_fresh_socket, tcptr)
 {
-	int sock = socket(PF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);
+	int sock = socket(PF_INET, SOCK_STREAM, 0);
 	ATF_REQUIRE(sock >= 0);
 
 	int ep = epoll_create1(EPOLL_CLOEXEC);
@@ -1099,9 +1099,9 @@ ATF_TC_BODY_FD_LEAKCHECK(epoll__epollout_on_connecting_socket, tcptr)
 	for (;;) {
 		bool success = false;
 
-		int sock = socket(PF_INET, /**/
-		    SOCK_STREAM | SOCK_CLOEXEC | SOCK_NONBLOCK, 0);
+		int sock = socket(PF_INET, SOCK_STREAM, 0);
 		ATF_REQUIRE(sock >= 0);
+		ATF_REQUIRE(fcntl(sock, F_SETFL, O_NONBLOCK) == 0);
 
 		struct epoll_event event = { .events = EPOLLIN | EPOLLRDHUP |
 			    EPOLLOUT };
@@ -1397,7 +1397,7 @@ ATF_TC_HEAD(epoll__timeout_on_listening_socket, tc)
 }
 ATF_TC_BODY_FD_LEAKCHECK(epoll__timeout_on_listening_socket, tcptr)
 {
-	int sock = socket(PF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);
+	int sock = socket(PF_INET, SOCK_STREAM, 0);
 	ATF_REQUIRE(sock >= 0);
 
 	int enable = 1;
@@ -1523,15 +1523,15 @@ shutdown_behavior_impl(void (*fd_fun)(int fds[3]))
 			++counter;
 
 			if (counter <= 5) {
-				send(fds[0], &c, 1, MSG_NOSIGNAL);
+				send(fds[0], &c, 1, 0);
 			} else if (counter == 6) {
-				send(fds[0], &c, 1, MSG_NOSIGNAL);
+				send(fds[0], &c, 1, 0);
 				shutdown(fds[0], SHUT_WR);
 
 				usleep(100000);
 			} else {
 				uint8_t data[512] = { 0 };
-				send(fds[1], &data, sizeof(data), MSG_NOSIGNAL);
+				send(fds[1], &data, sizeof(data), 0);
 
 				close(fds[0]);
 
@@ -1544,7 +1544,7 @@ shutdown_behavior_impl(void (*fd_fun)(int fds[3]))
 			}
 
 		} else if (event_result.events == EPOLLOUT) {
-			send(event.data.fd, &c, 1, MSG_NOSIGNAL);
+			send(event.data.fd, &c, 1, 0);
 			// continue
 		} else if (fd_fun == fd_domain_socket &&
 		    (event_result.events & (EPOLLOUT | EPOLLHUP)) ==
@@ -1606,7 +1606,7 @@ datagram_connector(void *arg)
 {
 	(void)arg;
 
-	int sock = socket(PF_INET, SOCK_DGRAM | SOCK_CLOEXEC, 0);
+	int sock = socket(PF_INET, SOCK_DGRAM, 0);
 	ATF_REQUIRE(sock >= 0);
 
 	struct sockaddr_in addr = { 0 };
@@ -1637,7 +1637,7 @@ ATF_TC_BODY_FD_LEAKCHECK(epoll__datagram_connection, tcptr)
 	int ep = epoll_create1(EPOLL_CLOEXEC);
 	ATF_REQUIRE(ep >= 0);
 
-	int sock = socket(PF_INET, SOCK_DGRAM | SOCK_CLOEXEC, 0);
+	int sock = socket(PF_INET, SOCK_DGRAM, 0);
 	ATF_REQUIRE(sock >= 0);
 
 	int enable = 1;

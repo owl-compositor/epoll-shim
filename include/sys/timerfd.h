@@ -14,7 +14,10 @@ extern "C" {
 #define TFD_TIMER_ABSTIME 1
 #define TFD_TIMER_CANCEL_ON_SET (1 << 1)
 
-struct itimerspec;
+struct itimerspec {
+	struct timespec it_interval;
+	struct timespec it_value;
+};
 
 int timerfd_create(int, int);
 int timerfd_settime(int, int, struct itimerspec const *, struct itimerspec *);

@@ -7,6 +7,8 @@
 
 #include <time.h>
 
+#include <sys/timerfd.h>
+
 // TODO(jan): Remove this once the definition is exposed in <sys/time.h> in
 // all supported FreeBSD versions.
 #ifndef timespeccmp

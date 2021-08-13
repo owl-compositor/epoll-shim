@@ -546,7 +546,7 @@ retry:;
 		(void)pthread_mutex_unlock(&epoll_shim_ctx.mutex);
 	}
 
-	int n = ppoll(fds, nfds, timeout, sigmask);
+	int n = ppoll_shim(fds, nfds, timeout, sigmask);
 	if (n < 0) {
 		return errno;
 	}

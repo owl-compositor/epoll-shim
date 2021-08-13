@@ -40,9 +40,11 @@ ATF_TC_BODY_FD_LEAKCHECK(pipe__simple_poll, tc)
 {
 	int p[2] = { -1, -1 };
 
-	ATF_REQUIRE(pipe2(p, O_CLOEXEC | O_NONBLOCK) == 0);
+	ATF_REQUIRE(pipe(p) == 0);
 	ATF_REQUIRE(p[0] >= 0);
 	ATF_REQUIRE(p[1] >= 0);
+	ATF_REQUIRE(fcntl(p[0], F_SETFL, O_NONBLOCK) == 0);
+	ATF_REQUIRE(fcntl(p[1], F_SETFL, O_NONBLOCK) == 0);
 
 	{
 		struct pollfd pfd = { .fd = p[0], .events = POLLIN };
@@ -87,9 +89,11 @@ ATF_TC_BODY_FD_LEAKCHECK(pipe__poll_write_end_after_read_end_close, tc)
 {
 	int p[2] = { -1, -1 };
 
-	ATF_REQUIRE(pipe2(p, O_CLOEXEC | O_NONBLOCK) == 0);
+	ATF_REQUIRE(pipe(p) == 0);
 	ATF_REQUIRE(p[0] >= 0);
 	ATF_REQUIRE(p[1] >= 0);
+	ATF_REQUIRE(fcntl(p[0], F_SETFL, O_NONBLOCK) == 0);
+	ATF_REQUIRE(fcntl(p[1], F_SETFL, O_NONBLOCK) == 0);
 
 	int ep = epoll_create1(EPOLL_CLOEXEC);
 	ATF_REQUIRE(ep >= 0);
@@ -131,9 +135,11 @@ ATF_TC_BODY_FD_LEAKCHECK(pipe__poll_full_write_end_after_read_end_close, tc)
 {
 	int p[2] = { -1, -1 };
 
-	ATF_REQUIRE(pipe2(p, O_CLOEXEC | O_NONBLOCK) == 0);
+	ATF_REQUIRE(pipe(p) == 0);
 	ATF_REQUIRE(p[0] >= 0);
 	ATF_REQUIRE(p[1] >= 0);
+	ATF_REQUIRE(fcntl(p[0], F_SETFL, O_NONBLOCK) == 0);
+	ATF_REQUIRE(fcntl(p[1], F_SETFL, O_NONBLOCK) == 0);
 
 	char c = 0;
 	ssize_t r;
@@ -182,9 +188,11 @@ ATF_TC_BODY_FD_LEAKCHECK(pipe__poll_full_write_end_after_read_end_close_hup, tc)
 {
 	int p[2] = { -1, -1 };
 
-	ATF_REQUIRE(pipe2(p, O_CLOEXEC | O_NONBLOCK) == 0);
+	ATF_REQUIRE(pipe(p) == 0);
 	ATF_REQUIRE(p[0] >= 0);
 	ATF_REQUIRE(p[1] >= 0);
+	ATF_REQUIRE(fcntl(p[0], F_SETFL, O_NONBLOCK) == 0);
+	ATF_REQUIRE(fcntl(p[1], F_SETFL, O_NONBLOCK) == 0);
 
 #if defined(__FreeBSD__)
 	{
@@ -254,9 +262,11 @@ ATF_TC_BODY_FD_LEAKCHECK(
 {
 	int p[2] = { -1, -1 };
 
-	ATF_REQUIRE(pipe2(p, O_CLOEXEC | O_NONBLOCK) == 0);
+	ATF_REQUIRE(pipe(p) == 0);
 	ATF_REQUIRE(p[0] >= 0);
 	ATF_REQUIRE(p[1] >= 0);
+	ATF_REQUIRE(fcntl(p[0], F_SETFL, O_NONBLOCK) == 0);
+	ATF_REQUIRE(fcntl(p[1], F_SETFL, O_NONBLOCK) == 0);
 
 	char c = 0;
 	ssize_t r;
@@ -308,9 +318,11 @@ ATF_TC_BODY_FD_LEAKCHECK(
 {
 	int p[2] = { -1, -1 };
 
-	ATF_REQUIRE(pipe2(p, O_CLOEXEC | O_NONBLOCK) == 0);
+	ATF_REQUIRE(pipe(p) == 0);
 	ATF_REQUIRE(p[0] >= 0);
 	ATF_REQUIRE(p[1] >= 0);
+	ATF_REQUIRE(fcntl(p[0], F_SETFL, O_NONBLOCK) == 0);
+	ATF_REQUIRE(fcntl(p[1], F_SETFL, O_NONBLOCK) == 0);
 
 	char c = 0;
 	ssize_t r;
@@ -364,9 +376,11 @@ ATF_TC_BODY_FD_LEAKCHECK(
 {
 	int p[2] = { -1, -1 };
 
-	ATF_REQUIRE(pipe2(p, O_CLOEXEC | O_NONBLOCK) == 0);
+	ATF_REQUIRE(pipe(p) == 0);
 	ATF_REQUIRE(p[0] >= 0);
 	ATF_REQUIRE(p[1] >= 0);
+	ATF_REQUIRE(fcntl(p[0], F_SETFL, O_NONBLOCK) == 0);
+	ATF_REQUIRE(fcntl(p[1], F_SETFL, O_NONBLOCK) == 0);
 
 	char c = 0;
 	ssize_t r;
@@ -459,9 +473,12 @@ ATF_TC_BODY_FD_LEAKCHECK(pipe__pipe_event_poll, tc)
 {
 	int p[2] = { -1, -1 };
 
-	ATF_REQUIRE(pipe2(p, O_CLOEXEC | O_NONBLOCK) == 0);
+	ATF_REQUIRE(pipe(p) == 0);
 	ATF_REQUIRE(p[0] >= 0);
 	ATF_REQUIRE(p[1] >= 0);
+	ATF_REQUIRE(fcntl(p[0], F_SETFL, O_NONBLOCK) == 0);
+	ATF_REQUIRE(fcntl(p[1], F_SETFL, O_NONBLOCK) == 0);
+
 #if defined(__FreeBSD__)
 	{
 		cap_rights_t rights;
@@ -1219,9 +1236,12 @@ ATF_TC_BODY_FD_LEAKCHECK(pipe__closed_read_end, tc)
 {
 	int p[2] = { -1, -1 };
 
-	ATF_REQUIRE(pipe2(p, O_CLOEXEC | O_NONBLOCK) == 0);
+	ATF_REQUIRE(pipe(p) == 0);
 	ATF_REQUIRE(p[0] >= 0);
 	ATF_REQUIRE(p[1] >= 0);
+	ATF_REQUIRE(fcntl(p[0], F_SETFL, O_NONBLOCK) == 0);
+	ATF_REQUIRE(fcntl(p[1], F_SETFL, O_NONBLOCK) == 0);
+
 #if defined(__FreeBSD__)
 	{
 		cap_rights_t rights;
@@ -1348,9 +1368,12 @@ ATF_TC_BODY_FD_LEAKCHECK(pipe__closed_read_end_of_duplex, tc)
 {
 	int p[2] = { -1, -1 };
 
-	ATF_REQUIRE(pipe2(p, O_CLOEXEC | O_NONBLOCK) == 0);
+	ATF_REQUIRE(pipe(p) == 0);
 	ATF_REQUIRE(p[0] >= 0);
 	ATF_REQUIRE(p[1] >= 0);
+	ATF_REQUIRE(fcntl(p[0], F_SETFL, O_NONBLOCK) == 0);
+	ATF_REQUIRE(fcntl(p[1], F_SETFL, O_NONBLOCK) == 0);
+
 
 	{
 		int fl = fcntl(p[0], F_GETFL, 0);
@@ -1424,9 +1447,11 @@ ATF_TC_BODY_FD_LEAKCHECK(pipe__closed_read_end_register_before_close, tc)
 {
 	int p[2] = { -1, -1 };
 
-	ATF_REQUIRE(pipe2(p, O_CLOEXEC | O_NONBLOCK) == 0);
+	ATF_REQUIRE(pipe(p) == 0);
 	ATF_REQUIRE(p[0] >= 0);
 	ATF_REQUIRE(p[1] >= 0);
+	ATF_REQUIRE(fcntl(p[0], F_SETFL, O_NONBLOCK) == 0);
+	ATF_REQUIRE(fcntl(p[1], F_SETFL, O_NONBLOCK) == 0);
 
 #if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__DragonFly__)
 	{
@@ -1530,9 +1555,11 @@ ATF_TC_BODY_FD_LEAKCHECK(pipe__closed_write_end, tc)
 {
 	int p[2] = { -1, -1 };
 
-	ATF_REQUIRE(pipe2(p, O_CLOEXEC | O_NONBLOCK) == 0);
+	ATF_REQUIRE(pipe(p) == 0);
 	ATF_REQUIRE(p[0] >= 0);
 	ATF_REQUIRE(p[1] >= 0);
+	ATF_REQUIRE(fcntl(p[0], F_SETFL, O_NONBLOCK) == 0);
+	ATF_REQUIRE(fcntl(p[1], F_SETFL, O_NONBLOCK) == 0);
 
 #if defined(__FreeBSD__)
 	{
@@ -1656,9 +1683,11 @@ ATF_TC_BODY_FD_LEAKCHECK(pipe__closed_write_end_register_before_close, tc)
 {
 	int p[2] = { -1, -1 };
 
-	ATF_REQUIRE(pipe2(p, O_CLOEXEC | O_NONBLOCK) == 0);
+	ATF_REQUIRE(pipe(p) == 0);
 	ATF_REQUIRE(p[0] >= 0);
 	ATF_REQUIRE(p[1] >= 0);
+	ATF_REQUIRE(fcntl(p[0], F_SETFL, O_NONBLOCK) == 0);
+	ATF_REQUIRE(fcntl(p[1], F_SETFL, O_NONBLOCK) == 0);
 
 #if !defined(__linux__) && !defined(FORCE_EPOLL)
 	int kq = kqueue();

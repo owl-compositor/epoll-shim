@@ -338,8 +338,11 @@ ATF_TC_BODY_FD_LEAKCHECK(eventfd__threads_read, tc)
 
 		for (int i = 0; i < (int)nitems(threads); ++i) {
 			thread_args[i].efd = efd;
-			ATF_REQUIRE(pipe2(thread_args[i].signal_pipe,
-					O_CLOEXEC | O_NONBLOCK) == 0);
+			ATF_REQUIRE(pipe(thread_args[i].signal_pipe) == 0);
+			ATF_REQUIRE(fcntl(thread_args[i].signal_pipe[0],
+					F_SETFL, O_NONBLOCK) == 0);
+			ATF_REQUIRE(fcntl(thread_args[i].signal_pipe[1],
+					F_SETFL, O_NONBLOCK) == 0);
 			ATF_REQUIRE(pthread_create(&threads[i], NULL, /**/
 					read_fun, &thread_args[i]) == 0);
 		}

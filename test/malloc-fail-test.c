@@ -231,7 +231,9 @@ ATF_TC_WITHOUT_HEAD(malloc_fail__epoll);
 ATF_TC_BODY_FD_LEAKCHECK(malloc_fail__epoll, tc)
 {
 	int p[2];
-	ATF_REQUIRE(pipe2(p, O_CLOEXEC | O_NONBLOCK) == 0);
+	ATF_REQUIRE(pipe(p) == 0);
+	ATF_REQUIRE(fcntl(p[0], F_SETFL, O_NONBLOCK) == 0);
+	ATF_REQUIRE(fcntl(p[1], F_SETFL, O_NONBLOCK) == 0);
 
 	pthread_t thread;
 

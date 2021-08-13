@@ -94,4 +94,27 @@ int epoll_shim_ppoll(struct pollfd *, nfds_t, struct timespec const *,
 
 int epoll_shim_fcntl(int fd, int cmd, ...);
 
+static int ppoll_shim(struct pollfd *fds, nfds_t nfds,
+    struct timespec const *timeout,
+    sigset_t const *sigmask)
+{
+	int ret, ms = -1;
+	sigset_t orig_mask;
+
+	if (timeout != NULL) {
+		ms = timeout->tv_sec * 1000 + timeout->tv_nsec / 1000000;
+	}
+	if (sigmask != NULL) {
+		pthread_sigmask(SIG_SETMASK, sigmask, &orig_mask);
+	}
+
+	ret = poll(fds, nfds, ms);
+
+	if (sigmask != NULL) {
+		pthread_sigmask(SIG_SETMASK, &orig_mask, NULL);
+	}
+
+	return ret;
+}
+
 #endif
